@@ -1,0 +1,729 @@
+{ "items" : [
+  {
+    "id"      : "01",
+    "name"    : "Thread",
+    "complex" : false
+  },
+  {
+    "id"      : "02",
+    "name"    : "Stick",
+    "complex" : false
+  },
+  {
+    "id"      : "03",
+    "name"    : "Pelt",
+    "complex" : false
+  },
+  {
+    "id"      : "04",
+    "name"    : "Bone",
+    "complex" : false
+  },
+  {
+    "id"      : "05",
+    "name"    : "Coal",
+    "complex" : false
+  },
+  {
+    "id"      : "06",
+    "name"    : "Charcoal",
+    "complex" : false
+  },
+  {
+    "id"      : "07",
+    "name"    : "Powder",
+    "complex" : false
+  },
+  {
+    "id"      : "08",
+    "name"    : "Iron ore",
+    "complex" : false
+  },
+  {
+    "id"      : "09",
+    "name"    : "Cloth",
+    "complex" : false
+  },
+  {
+    "id"      : "10",
+    "name"    : "Silver ore",
+    "complex" : false
+  },
+  {
+    "id"      : "11",
+    "name"    : "Adamantite ore",
+    "complex" : false
+  },
+  {
+    "id"      : "12",
+    "name"    : "Mithril ore",
+    "complex" : false
+  },
+  {
+    "id"      : "13",
+    "name"    : "Magic stone",
+    "complex" : false
+  },
+  {
+    "id"      : "14",
+    "name"    : "Wooden shaft",
+    "complex" : true
+  },
+  {
+    "id"      : "15",
+    "name"    : "Sapphire",
+    "complex" : false
+  },
+  {
+    "id"      : "16",
+    "name"    : "Solvent",
+    "complex" : false
+  },
+  {
+    "id"      : "17",
+    "name"    : "Ruby",
+    "complex" : false
+  },
+  {
+    "id"      : "18",
+    "name"    : "Hardener",
+    "complex" : false
+  },
+  {
+    "id"      : "19",
+    "name"    : "Steel",
+    "complex" : true
+  },
+  {
+    "id"      : "20",
+    "name"    : "Leather",
+    "complex" : true
+  },
+  {
+    "id"      : "21",
+    "name"    : "Bone powder",
+    "complex" : true
+  },
+  {
+    "id"      : "22",
+    "name"    : "String",
+    "complex" : true
+  },
+  {
+    "id"      : "23",
+    "name"    : "Coke",
+    "complex" : true
+  },
+  {
+    "id"      : "24",
+    "name"    : "Purified powder",
+    "complex" : true
+  },
+  {
+    "id"      : "25",
+    "name"    : "Silver alloy",
+    "complex" : true
+  },
+  {
+    "id"      : "27",
+    "name"    : "Steel mold",
+    "complex" : true
+  },
+  {
+    "id"      : "28",
+    "name"    : "Silver mold",
+    "complex" : true
+  },
+  {
+    "id"      : "31",
+    "name"    : "Rope",
+    "complex" : true
+  },
+  {
+    "id"      : "33",
+    "name"    : "Metal plate",
+    "complex" : true
+  },
+  {
+    "id"      : "39",
+    "name"    : "Stinky Sumac",
+    "complex" : false
+  },
+  {
+    "id"      : "40",
+    "name"    : "Mercy Sassafras",
+    "complex" : false
+  },
+  {
+    "id"      : "41",
+    "name"    : "Cliff Rue",
+    "complex" : false
+  },
+  {
+    "id"      : "42",
+    "name"    : "Love Creeper",
+    "complex" : false
+  },
+  {
+    "id"      : "43",
+    "name"    : "Wolf Root",
+    "complex" : false
+  },
+  {
+    "id"      : "44",
+    "name"    : "Swamp Lavender",
+    "complex" : false
+  },
+  {
+    "id"      : "45",
+    "name"    : "White Blossom",
+    "complex" : false
+  },
+  {
+    "id"      : "46",
+    "name"    : "Ilaves",
+    "complex" : false
+  },
+  {
+    "id"      : "47",
+    "name"    : "Ephijora",
+    "complex" : false
+  },
+  {
+    "id"      : "48",
+    "name"    : "Storm Hyssop",
+    "complex" : false
+  },
+  {
+    "id"      : "49",
+    "name"    : "Cave Garlic",
+    "complex" : false
+  },
+  {
+    "id"      : "50",
+    "name"    : "Yellow Seed",
+    "complex" : false
+  },
+  {
+    "id"      : "51",
+    "name"    : "Tecceagrass",
+    "complex" : false
+  },
+  {
+    "id"      : "52",
+    "name"    : "Spring Bay Leaf",
+    "complex" : false
+  },
+  {
+    "id"      : "53",
+    "name"    : "Ash Rosemary",
+    "complex" : false
+  },
+  {
+    "id"      : "54",
+    "name"    : "Sanguine Parsley",
+    "complex" : false
+  },
+  {
+    "id"      : "55",
+    "name"    : "Sun Tarragon",
+    "complex" : false
+  },
+  {
+    "id"      : "56",
+    "name"    : "Maccunut",
+    "complex" : false
+  },
+  {
+    "id"      : "57",
+    "name"    : "Dragon Seed",
+    "complex" : false
+  },
+  {
+    "id"      : "58",
+    "name"    : "Queen's Pepper",
+    "complex" : false
+  },
+  {
+    "id"      : "59",
+    "name"    : "Plasma of abyss",
+    "complex" : true
+  },
+  {
+    "id"      : "60",
+    "name"    : "Ultramarine dust",
+    "complex" : true
+  },
+  {
+    "id"      : "61",
+    "name"    : "Ethereal bone",
+    "complex" : true
+  },
+  {
+    "id"      : "62",
+    "name"    : "Itacory",
+    "complex" : true
+  },
+  {
+    "id"      : "63",
+    "name"    : "Assassin Vine",
+    "complex" : true
+  },
+  {
+    "id"      : "64",
+    "name"    : "Kloliarway",
+    "complex" : true
+  },
+  {
+    "id"      : "100",
+    "name"    : "Pouch of gold",
+    "complex" : true
+  },
+  {
+    "id"      : "501",
+    "name"    : "Wrapping",
+    "complex" : true
+  },
+  {
+    "id"      : "505",
+    "name"    : "Wooden arrows pack",
+    "complex" : true
+  },
+  {
+    "id"      : "511",
+    "name"    : "Steel arrows pack",
+    "complex" : true
+  },
+  {
+    "id"      : "r01",
+    "name"    : "Champion Sword recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r02",
+    "name"    : "Trident recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r03",
+    "name"    : "Hunter Bow recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r04",
+    "name"    : "War hammer recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r05",
+    "name"    : "Hunter Dagger recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r06",
+    "name"    : "Order Armor recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r07",
+    "name"    : "Order Helmet recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r08",
+    "name"    : "Order Boots recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r09",
+    "name"    : "Order Gauntlets recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r10",
+    "name"    : "Order shield recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r11",
+    "name"    : "Hunter Armor recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r12",
+    "name"    : "Hunter Helmet recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r13",
+    "name"    : "Hunter Boots recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r14",
+    "name"    : "Hunter Gloves recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r15",
+    "name"    : "Clarity Robe recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r16",
+    "name"    : "Clarity Circlet recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r17",
+    "name"    : "Clarity Shoes recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "r18",
+    "name"    : "Clarity Bracers recipe",
+    "complex" : false
+  },
+  {
+    "id"      : "k01",
+    "name"    : "Champion blade",
+    "complex" : false
+  },
+  {
+    "id"      : "k02",
+    "name"    : "Trident blade",
+    "complex" : false
+  },
+  {
+    "id"      : "k03",
+    "name"    : "Hunter shaft",
+    "complex" : false
+  },
+  {
+    "id"      : "k04",
+    "name"    : "War hammer head",
+    "complex" : false
+  },
+  {
+    "id"      : "k05",
+    "name"    : "Hunter blade",
+    "complex" : false
+  },
+  {
+    "id"      : "k06",
+    "name"    : "Order Armor piece",
+    "complex" : false
+  },
+  {
+    "id"      : "k07",
+    "name"    : "Order Helmet fragment",
+    "complex" : false
+  },
+  {
+    "id"      : "k08",
+    "name"    : "Order Boots part",
+    "complex" : false
+  },
+  {
+    "id"      : "k09",
+    "name"    : "Order Gauntlets part",
+    "complex" : false
+  },
+  {
+    "id"      : "k10",
+    "name"    : "Order shield part",
+    "complex" : false
+  },
+  {
+    "id"      : "k11",
+    "name"    : "Hunter Armor part",
+    "complex" : false
+  },
+  {
+    "id"      : "k12",
+    "name"    : "Hunter Helmet fragment",
+    "complex" : false
+  },
+  {
+    "id"      : "k13",
+    "name"    : "Hunter Boots part",
+    "complex" : false
+  },
+  {
+    "id"      : "k14",
+    "name"    : "Hunter Gloves part",
+    "complex" : false
+  },
+  {
+    "id"      : "k15",
+    "name"    : "Clarity Robe piece",
+    "complex" : false
+  },
+  {
+    "id"      : "k16",
+    "name"    : "Clarity Circlet fragment",
+    "complex" : false
+  },
+  {
+    "id"      : "k17",
+    "name"    : "Clarity Shoes part",
+    "complex" : false
+  },
+  {
+    "id"      : "k18",
+    "name"    : "Clarity Bracers part",
+    "complex" : false
+  },
+  {
+    "id"      : "w28",
+    "name"    : "Champion Sword",
+    "complex" : true
+  },
+  {
+    "id"      : "w29",
+    "name"    : "Trident",
+    "complex" : true
+  },
+  {
+    "id"      : "w30",
+    "name"    : "Hunter Bow",
+    "complex" : true
+  },
+  {
+    "id"      : "w31",
+    "name"    : "War hammer",
+    "complex" : true
+  },
+  {
+    "id"      : "w32",
+    "name"    : "Hunter dagger",
+    "complex" : true
+  },
+  {
+    "id"      : "a27",
+    "name"    : "Order Armor",
+    "complex" : true
+  },
+  {
+    "id"      : "a28",
+    "name"    : "Order Helmet",
+    "complex" : true
+  },
+  {
+    "id"      : "a29",
+    "name"    : "Order Boots",
+    "complex" : true
+  },
+  {
+    "id"      : "a30",
+    "name"    : "Order Gauntlets",
+    "complex" : true
+  },
+  {
+    "id"      : "a31",
+    "name"    : "Order Shield",
+    "complex" : true
+  },
+  {
+    "id"      : "a32",
+    "name"    : "Hunter Armor",
+    "complex" : true
+  },
+  {
+    "id"      : "a33",
+    "name"    : "Hunter Helmet",
+    "complex" : true
+  },
+  {
+    "id"      : "a34",
+    "name"    : "Hunter Boots",
+    "complex" : true
+  },
+  {
+    "id"      : "a35",
+    "name"    : "Hunter Gloves",
+    "complex" : true
+  },
+  {
+    "id"      : "a36",
+    "name"    : "Clarity Robe",
+    "complex" : true
+  },
+  {
+    "id"      : "a37",
+    "name"    : "Clarity Circlet",
+    "complex" : true
+  },
+  {
+    "id"      : "a38",
+    "name"    : "Clarity Shoes",
+    "complex" : true
+  },
+  {
+    "id"      : "a39",
+    "name"    : "Clarity Bracers",
+    "complex" : true
+  }
+  ],
+  "recipes" : [
+  {
+    "id" : "14",
+    "ingredients" : [
+      [1, "07"],
+      [5, "02"]
+    ]
+  },
+  {
+    "id" : "19",
+    "ingredients" : [
+      [2, "08"],
+      [2, "07"]
+    ]
+  },
+  {
+    "id" : "20",
+    "ingredients" : [
+      [4, "03"]
+    ]
+  },
+  {
+    "id" : "21",
+    "ingredients" : [
+      [4, "04"]
+    ]
+  },
+  {
+    "id" : "22",
+    "ingredients" : [
+      [3, "02"]
+    ]
+  },
+  {
+    "id" : "23",
+    "ingredients" : [
+      [3, "05"],
+      [3, "06"]
+    ]
+  },
+  {
+    "id" : "24",
+    "ingredients" : [
+      [2, "07"],
+      [1, "13"],
+      [2, "21"]
+    ]
+  },
+  {
+    "id" : "25",
+    "ingredients" : [
+      [1, "10"],
+      [1, "19"],
+      [1, "24"]
+    ]
+  },
+  {
+    "id" : "27",
+    "ingredients" : [
+      [2, "07"],
+      [2, "08"],
+      [2, "22"]
+    ]
+  },
+  {
+    "id" : "28",
+    "ingredients" : [
+      [2, "10"],
+      [2, "22"],
+      [2, "23"]
+    ]
+  },
+  {
+    "id" : "31",
+    "ingredients" : [
+      [4, "01"],
+      [1, "22"]
+    ]
+  },
+  {
+    "id" : "33",
+    "ingredients" : [
+      [3, "02"],
+      [3, "07"],
+      [3, "08"]
+    ]
+  },
+  {
+    "id" : "100",
+    "ingredients" : [
+      [12, "01"],
+      [2, "20"]
+    ]
+  },
+  {
+    "id" : "501",
+    "ingredients" : [
+      [3, "09"],
+      [3, "22"]
+    ]
+  },
+  {
+    "id" : "505",
+    "ingredients" : [
+      [6, "01"],
+      [1, "08"]
+    ]
+  },
+  {
+    "id" : "511",
+    "ingredients" : [
+      [4, "02"],
+      [1, "19"]
+    ]
+  },
+  {
+    "id" : "59",
+    "ingredients" : [
+      [1, "41"],
+      [1, "49"],
+      [1, "55"]
+    ]
+  },
+  {
+    "id" : "60",
+    "ingredients" : [
+      [1, "39"],
+      [1, "48"],
+      [1, "51"]
+    ]
+  },
+  {
+    "id" : "61",
+    "ingredients" : [
+      [1, "46"],
+      [1, "47"],
+      [1, "50"],
+      [1, "56"]
+    ]
+  },
+  {
+    "id" : "62",
+    "ingredients" : [
+      [1, "44"],
+      [1, "53"]
+    ]
+  },
+  {
+    "id" : "63",
+    "ingredients" : [
+      [1, "44"],
+      [1, "54"]
+    ]
+  },
+  {
+    "id" : "64",
+    "ingredients" : [
+      [1, "40"],
+      [1, "58"]
+    ]
+  }]
+}
