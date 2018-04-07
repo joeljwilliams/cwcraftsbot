@@ -249,5 +249,9 @@ if __name__ == '__main__':
     dp.add_handler(CallbackQueryHandler(craft_list, pattern=r'^list\|(.*)', pass_groups=True))
     dp.add_handler(RegexHandler(r'^/craft_(.*)', craft_cb, pass_groups=True))
 
-    ud.start_polling(clean=True)
+    if config.APP_ENV == 'PROD':
+        ud.start_webhook(listen='0.0.0.0', port=config.WEBHOOK_PORT, url_path=config.TOKEN)
+        ud.bot.set_webhook(url='https://{}/{}'.format(config.WEBHOOK_URL, config.TOKEN))
+    else:
+        ud.start_polling(clean=True)
     ud.idle()
