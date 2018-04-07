@@ -32,11 +32,11 @@ class Recipe(db.Entity):
     orm.composite_key(result_item, ingredient_item)
 
 
-if config.ENV == 'DEV':
+if config.APP_ENV == 'DEV':
     orm.set_sql_debug(True)
     db.bind('sqlite', 'crafts.sqlite', create_db=True)
-elif config.ENV == 'PROD':
-    db.bind(provider='postgres', user=config.DB_USER, password=config.DB_PASS, host=config.DB_HOST, database=DB_NAME)
+elif config.APP_ENV == 'PROD':
+    db.bind(provider='postgres', user=config.DB_USER, password=config.DB_PASS, host=config.DB_HOST, database=config.DB_NAME)
 db.generate_mapping(create_tables=True)
 
 
