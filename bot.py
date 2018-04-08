@@ -51,7 +51,7 @@ def dbhandler(bot: Bot, update: Update) -> None:
     usr = update.effective_user  # type: User
     logger.debug("create or update data for User: {} ({})".format(usr.full_name, usr.id))
     with orm.db_session:
-        dbUser.get_or_create(usr)
+        dbUser.update_or_create(usr)
 
 
 def craft(bot: Bot, update: Update) -> None:
@@ -180,7 +180,7 @@ def process_stock(bot: Bot, update: Update) -> None:
         return
 
 
-def submit_recipe(bot: Bot, update: Update) -> None:
+def submit_recipe(bot: Bot, update: Update) -> int:
     chat = update.effective_chat  # type: Chat
     msg = update.effective_message  # type: Message
     usr = update.effective_user  # type: User
@@ -190,7 +190,7 @@ def submit_recipe(bot: Bot, update: Update) -> None:
     return 0
 
 
-def cancel_recipe(bot: Bot, update: Update) -> None:
+def cancel_recipe(bot: Bot, update: Update) -> int:
     chat = update.effective_chat  # type: Chat
     msg = update.effective_message  # type: Message
     usr = update.effective_user  # type: User
@@ -200,7 +200,7 @@ def cancel_recipe(bot: Bot, update: Update) -> None:
     return ConversationHandler.END
 
 
-def process_recipe(bot: Bot, update: Update) -> None:
+def process_recipe(bot: Bot, update: Update) -> int:
     chat = update.effective_chat  # type: Chat
     msg = update.effective_message  # type: Message
     usr = update.effective_user  # type: User
