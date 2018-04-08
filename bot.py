@@ -5,7 +5,7 @@ import config
 
 from telegram import Update, Bot, Chat, Message, User, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, RegexHandler, CommandHandler, TypeHandler, CallbackQueryHandler, MessageHandler, \
-    ConversationHandler
+    ConversationHandler, Filters
 from telegram.ext.dispatcher import run_async
 
 from helpers import ForwardedFrom, stock_re, recipe_re, recipe_parts_re
@@ -227,6 +227,32 @@ def process_recipe(bot: Bot, update: Update) -> int:
     return 0
 
 
+def item_search(bot: Bot, update: Update) -> None:
+    chat = update.effective_chat  # type: Chat
+    msg = update.effective_message  # type: Message
+    usr = update.effective_user  # type: User
+
+    search_text = msg.text
+
+    keywords = search_text.split()
+
+    with orm.db_session:
+        items = orm.select(i for i in dbItem)
+        for keyword in keywords:
+            items = items.filter(lambda i: keyword in i.name)
+
+        if items:
+            result_text = f'Search results for <b>{search_text}</b>\n'
+
+            for item in items:
+                result_text += '{} - {}'.format(item.id, item.name)
+                result_text += ' (/craft_{})\n'.format(item.id) if item.complex else '\n'
+        else:
+            result_text = f'No items matched your search for <b>{search_text}</b>'
+
+    msg.reply_text(result_text, parse_mode='HTML')
+
+
 if __name__ == '__main__':
     ud = Updater(config.TOKEN)
     dp = ud.dispatcher
@@ -235,7 +261,7 @@ if __name__ == '__main__':
 
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('help', help))
-    dp.add_handler(CommandHandler('craft', craft))
+    dp.add_handler(CommandHandler(['craft', 'items'], craft))
 
     dp.add_handler(ConversationHandler(entry_points=[CommandHandler('submit', submit_recipe)],
                                        states={
@@ -246,6 +272,7 @@ if __name__ == '__main__':
                    )
 
     dp.add_handler(MessageHandler(ForwardedFrom(user_id=408101137), process_stock))
+    dp.add_handler(MessageHandler(Filters.text, item_search))
     dp.add_handler(CallbackQueryHandler(craft_list, pattern=r'^list\|(.*)', pass_groups=True))
     dp.add_handler(RegexHandler(r'^/craft_(.*)', craft_cb, pass_groups=True))
 
@@ -255,3 +282,4 @@ if __name__ == '__main__':
     else:
         ud.start_polling(clean=True)
     ud.idle()
+
