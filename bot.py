@@ -239,7 +239,7 @@ def item_search(bot: Bot, update: Update) -> None:
     with orm.db_session:
         items = orm.select(i for i in dbItem)
         for keyword in keywords:
-            items = items.filter(lambda i: keyword in i.name)
+            items = items.filter(lambda i: keyword.lower() in i.name.lower())
 
         if items:
             result_text = f'Search results for <b>{search_text}</b>\n'
