@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 import re
+from uuid import uuid4
 
 import config
 
-from telegram import Update, Bot, Chat, Message, User, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import Updater, RegexHandler, CommandHandler, TypeHandler, CallbackQueryHandler, MessageHandler, \
-    ConversationHandler, Filters
+from telegram import Update, Bot, Chat, Message, User, InlineKeyboardMarkup, InlineQueryResultArticle, \
+    InputTextMessageContent
+from telegram.ext import Updater, Filters, RegexHandler, CommandHandler, TypeHandler, CallbackQueryHandler, \
+    MessageHandler, ConversationHandler, InlineQueryHandler
 from telegram.ext.dispatcher import run_async
 
-from helpers import ForwardedFrom, stock_re, recipe_re, recipe_parts_re
+from consts import item_filter_kb, stock_re, recipe_re, recipe_parts_re
+from helpers import ForwardedFrom, build_craft_kb
 
 from pony import orm
 from models import User as dbUser, Recipe as dbRecipe, Item as dbItem
@@ -59,15 +62,7 @@ def craft(bot: Bot, update: Update) -> None:
     msg = update.effective_message  # type: Message
     usr = update.effective_user  # type: User
 
-    kb = [[InlineKeyboardButton('All', callback_data='list|all')],
-          [InlineKeyboardButton('Basic', callback_data='list|basic'),
-           InlineKeyboardButton('Crafted', callback_data='list|complex')],
-          [InlineKeyboardButton('Weapons', callback_data='list|weapon'),
-           InlineKeyboardButton('Armors', callback_data='list|armour')],
-          [InlineKeyboardButton('Recipes', callback_data='list|recipe'),
-           InlineKeyboardButton('Fragments', callback_data='list|fragment')]]
-
-    kb_markup = InlineKeyboardMarkup(kb)
+    kb_markup = InlineKeyboardMarkup(item_filter_kb)
 
     msg.reply_text('Which items would you like to view?', reply_markup=kb_markup)
 
@@ -80,15 +75,7 @@ def craft_list(bot: Bot, update: Update, groups: tuple) -> None:
 
     update.callback_query.answer(text='Filtering...')
 
-    kb = [[InlineKeyboardButton('All', callback_data='list|all')],
-          [InlineKeyboardButton('Basic', callback_data='list|basic'),
-           InlineKeyboardButton('Crafted', callback_data='list|complex')],
-          [InlineKeyboardButton('Weapons', callback_data='list|weapon'),
-           InlineKeyboardButton('Armors', callback_data='list|armour')],
-          [InlineKeyboardButton('Recipes', callback_data='list|recipe'),
-           InlineKeyboardButton('Fragments', callback_data='list|fragment')]]
-
-    kb_markup = InlineKeyboardMarkup(kb)
+    kb_markup = InlineKeyboardMarkup(item_filter_kb)
 
     item_filter = groups[0]
 
@@ -112,7 +99,7 @@ def craft_list(bot: Bot, update: Update, groups: tuple) -> None:
     items_list = '<b>{} items</b>\n'.format(item_filter.title())
 
     for item in items:
-        items_list += '{} - {}'.format(item.id, item.name)
+        items_list += '<code>{:>3}</code> - {}'.format(item.id, item.name)
         items_list += ' (/craft_{})\n'.format(item.id) if item.complex else '\n'
 
     msg.edit_text(items_list, reply_markup=kb_markup, parse_mode='HTML')
@@ -142,12 +129,15 @@ def craft_cb(bot: Bot, update: Update, groups: tuple) -> None:
         msg.reply_text("I'm sorry, but that item is not in the database.")
         return
 
+    kb_markup = None
+
     if item.complex:
         recipe_text = '<b>{name}</b>'.format(name=item.name)
         for ingr in item.result_of:
             recipe_text += '<code>\n\t{:>3} x {}</code>'.format(ingr.quantity_req, ingr.ingredient_item.name)
             if ingr.ingredient_item.complex:
                 recipe_text += ' (/craft_{})'.format(ingr.ingredient_item.id)
+        kb_markup = build_craft_kb(item)
 
     else:
         recipe_text = "<b>{}</b> cannot be crafted.".format(item.name)
@@ -159,7 +149,7 @@ def craft_cb(bot: Bot, update: Update, groups: tuple) -> None:
             if t.result_item.complex:
                 recipe_text += ' (/craft_{})'.format(t.result_item.id)
 
-    msg.reply_text(recipe_text, parse_mode='HTML')
+    msg.reply_text(recipe_text, reply_markup=kb_markup, parse_mode='HTML')
 
 
 @orm.db_session
@@ -171,9 +161,10 @@ def process_stock(bot: Bot, update: Update) -> None:
     matches = re.findall(stock_re, msg.text)
 
     if matches:
-        for stock in matches:
-            id, name, qty = stock
-            item = dbItem[id]
+        for stock_item in matches:
+            itemid, name, qty = stock_item
+            logger.debug(f'updating item: {itemid} - {name} x {qty}')
+            item = dbItem[itemid]
         msg.reply_text("Stock updated!")
     else:
         msg.reply_text("Send the /more command to @chtwrsbot and forward the stock result here.")
@@ -227,14 +218,17 @@ def process_recipe(bot: Bot, update: Update) -> int:
     return 0
 
 
-def item_search(bot: Bot, update: Update) -> None:
+def item_search(bot: Bot, update: Update, args: list=None) -> None:
     chat = update.effective_chat  # type: Chat
     msg = update.effective_message  # type: Message
     usr = update.effective_user  # type: User
 
-    search_text = msg.text
-
-    keywords = search_text.split()
+    if args:
+        search_text = ' '.join(args)
+        keywords = args
+    else:
+        search_text = msg.text
+        keywords = search_text.split()
 
     with orm.db_session:
         items = orm.select(i for i in dbItem)
@@ -245,12 +239,33 @@ def item_search(bot: Bot, update: Update) -> None:
             result_text = f'Search results for <b>{search_text}</b>\n'
 
             for item in items:
-                result_text += '{} - {}'.format(item.id, item.name)
+                result_text += '<code>{:>3}</code> - {}'.format(item.id, item.name)
                 result_text += ' (/craft_{})\n'.format(item.id) if item.complex else '\n'
         else:
             result_text = f'No items matched your search for <b>{search_text}</b>'
 
     msg.reply_text(result_text, parse_mode='HTML')
+
+
+def craft_inline(bot: Bot, update: Update, groups: tuple) -> None:
+    chat = update.effective_chat  # type: Chat
+    msg = update.effective_message  # type: Message
+    usr = update.effective_user  # type: User
+
+    if groups:
+        id, qty = groups
+
+    with orm.db_session:
+        item_name = dbItem[id].name
+
+    results = [
+        InlineQueryResultArticle(
+            id=uuid4(),
+            title=item_name,
+            input_message_content=InputTextMessageContent(f'/a_{id} {qty}')
+        )]
+
+    update.inline_query.answer(results)
 
 
 if __name__ == '__main__':
@@ -272,9 +287,12 @@ if __name__ == '__main__':
                    )
 
     dp.add_handler(MessageHandler(ForwardedFrom(user_id=408101137), process_stock))
+    dp.add_handler(CommandHandler(['search', 's', 'find'], item_search, pass_args=True))
     dp.add_handler(MessageHandler(Filters.text, item_search))
     dp.add_handler(CallbackQueryHandler(craft_list, pattern=r'^list\|(.*)', pass_groups=True))
     dp.add_handler(RegexHandler(r'^/craft_(.*)', craft_cb, pass_groups=True))
+
+    dp.add_handler(InlineQueryHandler(craft_inline, pattern=r'(\w{2,3})-(\d{1,3})', pass_groups=True))
 
     if config.APP_ENV == 'PROD':
         ud.start_webhook(listen='0.0.0.0', port=config.WEBHOOK_PORT, url_path=config.TOKEN)
