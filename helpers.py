@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 from telegram.ext import BaseFilter
-import re
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-stock_re = re.compile(r"^/a_(?P<id>\w+)\s(?P<name>[\w\s]+)\sx\s(?P<qty>\d+)$", re.MULTILINE)
-recipe_re = re.compile(r"^📃(?P<name>[\w ]+) \(recipe\):$", re.MULTILINE)
-recipe_parts_re = re.compile(r"^(?P<name>[\w\. ]+) x (?P<qty>\d+)$", re.MULTILINE)
+from models import Item
 
 
 class ForwardedFrom(BaseFilter):
@@ -17,3 +15,12 @@ class ForwardedFrom(BaseFilter):
             fwd_usr = message.forward_from
             return fwd_usr.id == self.user_id
         return False
+
+
+def build_craft_kb(item: Item) -> InlineKeyboardMarkup:
+    keyboard = []
+    for ingr in item.result_of:
+        qty = ingr.quantity_req
+        ingr = ingr.ingredient_item
+        keyboard.append([InlineKeyboardButton(text=f'{ingr.name}', switch_inline_query=f'{ingr.id}-{qty}')])
+    return InlineKeyboardMarkup(keyboard)
