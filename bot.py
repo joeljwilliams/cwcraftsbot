@@ -52,9 +52,21 @@ def dbhandler(bot: Bot, update: Update) -> None:
     chat = update.effective_chat  # type: Chat
     msg = update.effective_message  # type: Message
     usr = update.effective_user  # type: User
-    logger.debug("create or update data for User: {} ({})".format(usr.full_name, usr.id))
+
+    update_users = list()
+    update_users.append(usr)
+
+    if msg and msg.forward_from:
+        update_users.append(msg.forward_from)
+    if msg and msg.left_chat_member:
+        update_users.append(msg.left_chat_member)
+    if msg and msg.new_chat_members:
+        update_users.extend(msg.new_chat_members)
+
     with orm.db_session:
-        dbUser.update_or_create(usr)
+        for u in update_users:
+            logger.debug("create or update data for User: {} ({})".format(u.full_name, u.id))
+            dbUser.update_or_create(u)
 
 
 def craft(bot: Bot, update: Update) -> None:
