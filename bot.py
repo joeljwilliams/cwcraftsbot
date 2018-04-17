@@ -11,7 +11,7 @@ from telegram.ext import Updater, Filters, RegexHandler, CommandHandler, TypeHan
 from telegram.ext.dispatcher import run_async
 
 from consts import item_filter_kb, stock_re, recipe_re, recipe_parts_re
-from helpers import ForwardedFrom, build_craft_kb
+from helpers import ForwardedFrom, build_craft_kb, version_string
 
 from pony import orm
 from models import User as dbUser, Recipe as dbRecipe, Item as dbItem
@@ -46,6 +46,13 @@ def help(bot: Bot, update: Update) -> None:
                    parse_mode='HTML',
                    disable_web_page_preview=True)
 
+
+def version(bot: Bot, update: Update) -> None:
+    chat = update.effective_chat  # type: Chat
+    msg = update.effective_message  # type: Message
+    usr = update.effective_user  # type: User
+
+    msg.reply_text(version_string(), parse_mode='HTML')
 
 @run_async
 def dbhandler(bot: Bot, update: Update) -> None:
@@ -288,6 +295,7 @@ if __name__ == '__main__':
 
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('help', help))
+    dp.add_handler(CommandHandler('version', version))
     dp.add_handler(CommandHandler(['craft', 'items'], craft))
 
     dp.add_handler(ConversationHandler(entry_points=[CommandHandler('submit', submit_recipe)],
