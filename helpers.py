@@ -7,7 +7,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from models import Item, Recipe
 
-import pip
+from pip import get_installed_distributions
 import os
 import subprocess
 
@@ -28,7 +28,7 @@ def version_string():
                         str(subprocess.check_output(['git', 'rev-parse', 'HEAD']), 'utf-8'))[:7]
     ver_str += '<code>commit-{}</code>\n'.format(app_ver)
     ver_str += '\n<b>Package Versions:</b>\n'
-    for pkg in pip.get_installed_distributions(skip=('wheel', 'pip', 'setuptools')):
+    for pkg in get_installed_distributions(skip=('wheel', 'pip', 'setuptools')):
         ver_str += '<code>{}</code>\n'.format(pkg)
 
     return ver_str
