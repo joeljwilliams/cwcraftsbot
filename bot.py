@@ -11,7 +11,7 @@ from telegram.ext import Updater, Filters, RegexHandler, CommandHandler, TypeHan
 from telegram.ext.dispatcher import run_async
 
 from consts import item_filter_kb, stock_re, recipe_re, recipe_parts_re
-from helpers import ForwardedFrom, build_craft_kb, version_string
+from helpers import ForwardedFrom, build_craft_kb, version_string, gen_craft_tree
 
 from pony import orm
 from models import User as dbUser, Recipe as dbRecipe, Item as dbItem
@@ -151,11 +151,8 @@ def craft_cb(bot: Bot, update: Update, groups: tuple) -> None:
     kb_markup = None
 
     if item.complex:
-        recipe_text = '<b>{name}</b>'.format(name=item.name)
-        for ingr in item.result_of:
-            recipe_text += '<code>\n\t{:>3} x {}</code>'.format(ingr.quantity_req, ingr.ingredient_item.name)
-            if ingr.ingredient_item.complex:
-                recipe_text += ' (/craft_{})'.format(ingr.ingredient_item.id)
+        recipe_text = '<b>{name}</b>\n\n'.format(name=item.name)
+        recipe_text += gen_craft_tree(item)
         kb_markup = build_craft_kb(item)
 
     else:

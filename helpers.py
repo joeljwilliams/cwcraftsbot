@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+from collections import deque, defaultdict
+
 from telegram.ext import BaseFilter
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from models import Item
+from models import Item, Recipe
 
 import pip
 import os
@@ -30,6 +32,25 @@ def version_string():
         ver_str += '<code>{}</code>\n'.format(pkg)
 
     return ver_str
+
+
+def gen_craft_tree(item: Item) -> str:
+    output_list = str()
+    shopping_list = defaultdict(int)
+    mystack = deque()
+    for i in item.result_of:
+        mystack.appendleft((i, 0, i.quantity_req))
+    while mystack:
+        t, l, qty = mystack.popleft()
+        t = t.ingredient_item
+        if t.complex:
+            for i in t.result_of:
+                mystack.appendleft((i, l+1, qty*i.quantity_req))
+        else:
+            shopping_list[t.name] += qty
+        output_list += '<code>{}{} x {}</code>\n'.format('  '*l, qty, t.name)
+#        pprint(shopping_list)
+    return output_list
 
 
 def build_craft_kb(item: Item) -> InlineKeyboardMarkup:
