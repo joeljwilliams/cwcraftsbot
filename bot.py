@@ -311,7 +311,7 @@ if __name__ == '__main__':
 
     dp.add_handler(InlineQueryHandler(craft_inline, pattern=r'(\w{2,3})-(\d{1,3})', pass_groups=True))
 
-    if config.APP_ENV == 'PROD':
+    if config.APP_ENV.startswith('PROD'):
         ud.start_webhook(listen='0.0.0.0', port=config.WEBHOOK_PORT, url_path=config.TOKEN)
         ud.bot.set_webhook(url='https://{}/{}'.format(config.WEBHOOK_URL, config.TOKEN))
     else:
