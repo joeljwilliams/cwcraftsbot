@@ -29,7 +29,8 @@ if APP_ENV == 'PROD_OPENSHIFT':
     WEBHOOK_PORT = int(os.getenv("{}_SERVICE_PORT_WEB".format(os_app_name.upper().replace('-', '_'))))
 elif APP_ENV == 'PROD_HEROKU':
     LOGLEVEL = 'INFO'
-    DB_PARAMS = {'dsn': os.getenv('DATABASE_URL')}
+    DB_PARAMS = {'provider': 'postgres',
+                 'dsn': os.getenv('DATABASE_URL')}
 
     WEBHOOK_PORT = int(os.getenv('PORT'))
     WEBHOOK_URL = 'cw-crafts-bot.herokuapp.com'
