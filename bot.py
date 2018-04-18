@@ -11,7 +11,7 @@ from telegram.ext import Updater, Filters, RegexHandler, CommandHandler, TypeHan
 from telegram.ext.dispatcher import run_async
 
 from consts import item_filter_kb, stock_re, recipe_re, recipe_parts_re
-from helpers import ForwardedFrom, build_craft_kb
+from helpers import ForwardedFrom, build_craft_kb, version_string, gen_craft_tree
 
 from pony import orm
 from models import User as dbUser, Recipe as dbRecipe, Item as dbItem
@@ -47,14 +47,33 @@ def help(bot: Bot, update: Update) -> None:
                    disable_web_page_preview=True)
 
 
+def version(bot: Bot, update: Update) -> None:
+    chat = update.effective_chat  # type: Chat
+    msg = update.effective_message  # type: Message
+    usr = update.effective_user  # type: User
+
+    msg.reply_text(version_string(), parse_mode='HTML')
+
 @run_async
 def dbhandler(bot: Bot, update: Update) -> None:
     chat = update.effective_chat  # type: Chat
     msg = update.effective_message  # type: Message
     usr = update.effective_user  # type: User
-    logger.debug("create or update data for User: {} ({})".format(usr.full_name, usr.id))
+
+    update_users = list()
+    update_users.append(usr)
+
+    if msg and msg.forward_from:
+        update_users.append(msg.forward_from)
+    if msg and msg.left_chat_member:
+        update_users.append(msg.left_chat_member)
+    if msg and msg.new_chat_members:
+        update_users.extend(msg.new_chat_members)
+
     with orm.db_session:
-        dbUser.update_or_create(usr)
+        for u in update_users:
+            logger.debug("create or update data for User: {} ({})".format(u.full_name, u.id))
+            dbUser.update_or_create(u)
 
 
 def craft(bot: Bot, update: Update) -> None:
@@ -132,11 +151,8 @@ def craft_cb(bot: Bot, update: Update, groups: tuple) -> None:
     kb_markup = None
 
     if item.complex:
-        recipe_text = '<b>{name}</b>'.format(name=item.name)
-        for ingr in item.result_of:
-            recipe_text += '<code>\n\t{:>3} x {}</code>'.format(ingr.quantity_req, ingr.ingredient_item.name)
-            if ingr.ingredient_item.complex:
-                recipe_text += ' (/craft_{})'.format(ingr.ingredient_item.id)
+        recipe_text = '<b>{name}</b>\n\n'.format(name=item.name)
+        recipe_text += gen_craft_tree(item)
         kb_markup = build_craft_kb(item)
 
     else:
@@ -276,6 +292,7 @@ if __name__ == '__main__':
 
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('help', help))
+    dp.add_handler(CommandHandler('version', version))
     dp.add_handler(CommandHandler(['craft', 'items'], craft))
 
     dp.add_handler(ConversationHandler(entry_points=[CommandHandler('submit', submit_recipe)],
