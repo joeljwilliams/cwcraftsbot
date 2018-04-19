@@ -251,12 +251,15 @@ def item_search(bot: Bot, update: Update, args: list=None) -> None:
         for keyword in keywords:
             items = items.filter(lambda i: keyword.lower() in i.name.lower())
 
-        if items:
+        if len(items) > 1:
             result_text = f'Search results for <b>{search_text}</b>\n'
 
             for item in items:
                 result_text += '<code>{:>3}</code> - {}'.format(item.id, item.name)
                 result_text += ' (/craft_{})\n'.format(item.id) if item.complex else '\n'
+        elif len(items) == 1:
+            for item in items:
+                return craft_cb(bot, update, (item.id, ))
         else:
             result_text = f'No items matched your search for <b>{search_text}</b>'
 
