@@ -7,8 +7,6 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from models import Item, Recipe
 
-import os
-import subprocess
 
 class ForwardedFrom(BaseFilter):
     def __init__(self, user_id):
