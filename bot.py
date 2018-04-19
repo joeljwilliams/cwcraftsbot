@@ -318,7 +318,7 @@ def item_search(bot: Bot, update: Update, args: list=None) -> None:
 
             for item in items:
                 result_text += '<code>{:>3}</code> - {}'.format(item.id, item.name)
-                result_text += ' (/craft_{})\n'.format(item.id) if item.complex else '\n'
+                result_text += ' (/craft_{})\n'.format(item.id) if item.complex else ' (/i_{})\n'.format(item.id)
         elif len(items) == 1:
             for item in items:
                 return craft_cb(bot, update, (item.id, ))
@@ -361,7 +361,7 @@ def craft_inline(bot: Bot, update: Update, groups: tuple) -> None:
 
 
 if __name__ == '__main__':
-    ud = Updater(config.TOKEN, request_kwargs={'proxy_url': 'http://127.0.0.1:3128'})
+    ud = Updater(config.TOKEN)
     dp = ud.dispatcher
 
     dp.add_handler(TypeHandler(Update, dbhandler), group=-1)
@@ -382,7 +382,7 @@ if __name__ == '__main__':
     dp.add_handler(CommandHandler(['search', 's', 'find'], item_search, pass_args=True))
     dp.add_handler(MessageHandler(Filters.text, item_search))
     dp.add_handler(CallbackQueryHandler(craft_list, pattern=r'^list\|(.*)', pass_groups=True))
-    dp.add_handler(RegexHandler(r'^/craft_(.*)', craft_cb, pass_groups=True))
+    dp.add_handler(RegexHandler(r'^/(?:craft|i)_(.*)$', craft_cb, pass_groups=True))
 
     dp.add_handler(InlineQueryHandler(craft_inline, pattern=r'(\w{2,3})-(\d{1,3})', pass_groups=True))
 
