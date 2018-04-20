@@ -13,8 +13,10 @@ from telegram.ext.dispatcher import run_async
 from consts import item_filter_kb, stock_re, recipe_re, recipe_parts_re
 from helpers import ForwardedFrom, build_craft_kb, gen_craft_tree
 
+from chatwars import ChatWars
+
 from pony import orm
-from models import User as dbUser, Recipe as dbRecipe, Item as dbItem
+from models import User as dbUser, Recipe as dbRecipe, Item as dbItem, UserProfile
 
 import logging
 
@@ -360,8 +362,51 @@ def craft_inline(bot: Bot, update: Update, groups: tuple) -> None:
     return
 
 
+def auth(bot: Bot, update: Update, cwapi: ChatWars) -> int:
+    logger.debug("Entering: auth")
+
+    chat = update.effective_chat  # type: Chat
+    msg = update.effective_message  # type: Message
+    usr = update.effective_user  # type: User
+
+    cwapi.create_auth_code(usr.id)
+    msg.reply_text("Please forward authorisation code message from @chtwrsbot.")
+    return 10
+
+
+def verify_auth(bot: Bot, update: Update) -> None:
+    logger.debug("Entering: verify_auth")
+
+    chat = update.effective_chat  # type: Chat
+    msg = update.effective_message  # type: Message
+    usr = update.effective_user  # type: User
+
+    match = re.search(r'(\d{6})', msg.text)
+
+    if match:
+        cwapi.grant_token(usr.id, match.group(0))
+        return ConversationHandler.END
+    else:
+        msg.reply_text("Please resend.")
+        return 10
+
+
+def test(body):
+    logger.debug('test %s', body)
+
+
+def store_token(body):
+    user_id = body['userId']
+    chatwars_id = body['id']
+    token = body['token']
+    with orm.db_session:
+        user = dbUser[user_id]
+        user.profile = UserProfile(chatwars_id=chatwars_id, token=token)
+
+
 if __name__ == '__main__':
     ud = Updater(config.TOKEN)
+    cwapi = ChatWars(config.CWAPI_USER, config.CWAPI_PASS)
     dp = ud.dispatcher
 
     dp.add_handler(TypeHandler(Update, dbhandler), group=-1)
@@ -377,6 +422,13 @@ if __name__ == '__main__':
                                        fallbacks=[CommandHandler('cancel', cancel_recipe)]
                                        )
                    )
+    dp.add_handler(ConversationHandler(entry_points=[CommandHandler('auth', lambda b, u: auth(b, u, cwapi))],
+                                       states={
+                                           10: [MessageHandler(ForwardedFrom(user_id=408101137), verify_auth)]
+                                       },
+                                       fallbacks=[CommandHandler('cancel', cancel_recipe)]
+                                       )
+                   )
 
     dp.add_handler(MessageHandler(ForwardedFrom(user_id=408101137), process_stock))
     dp.add_handler(CommandHandler(['search', 's', 'find'], item_search, pass_args=True))
@@ -386,10 +438,12 @@ if __name__ == '__main__':
 
     dp.add_handler(InlineQueryHandler(craft_inline, pattern=r'(\w{2,3})-(\d{1,3})', pass_groups=True))
 
+    cwapi.add_handler('createAuthCode', test)
+    cwapi.add_handler('grantToken', store_token)
+
     if config.APP_ENV.startswith('PROD'):
         ud.start_webhook(listen='0.0.0.0', port=config.WEBHOOK_PORT, url_path=config.TOKEN)
         ud.bot.set_webhook(url='https://{}/{}'.format(config.WEBHOOK_URL, config.TOKEN))
     else:
         ud.start_polling(clean=True)
-    ud.idle()
-
+    cwapi.run()

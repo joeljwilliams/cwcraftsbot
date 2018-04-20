@@ -15,6 +15,13 @@ class User(db.Entity, TgMixin):
     last_name = orm.Optional(str)
     username = orm.Optional(str)
     language_code = orm.Optional(str)
+    profile = orm.Optional("UserProfile")
+
+
+class UserProfile(db.Entity):
+    id = orm.PrimaryKey(User)
+    chatwars_id = orm.Optional(str)
+    token = orm.Optional(str)
 
 
 class Item(db.Entity):
@@ -32,7 +39,7 @@ class Recipe(db.Entity):
     orm.composite_key(result_item, ingredient_item)
 
 
-if config.APP_ENV.startswith('PROD'):
+if config.APP_ENV and config.APP_ENV.startswith('PROD'):
     db.bind(**config.DB_PARAMS)
 else:
     orm.set_sql_debug(True)

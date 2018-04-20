@@ -5,6 +5,9 @@ import requests
 TOKEN = os.getenv('BOT_TOKEN')
 APP_ENV = os.getenv('APP_ENV')
 
+CWAPI_USER = os.getenv('CWAPI_USER')
+CWAPI_PASS = os.getenv('CWAPI_PASS')
+
 DB_USER = os.getenv('DATABASE_USER')
 DB_PASS = os.getenv('DATABASE_PASSWORD')
 DB_HOST = os.getenv('DATABASE_SERVICE_NAME')
