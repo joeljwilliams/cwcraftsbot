@@ -23,10 +23,6 @@ class ChatWars(object):
     commands that were issued and that should surface in the output as well.
 
     """
-    EXCHANGE = 'message'
-    EXCHANGE_TYPE = 'topic'
-    QUEUE = 'text'
-    ROUTING_KEY = 'example.text'
 
     def __init__(self, username, password):
         """Create a new instance of the consumer class, passing in the AMQP
@@ -99,6 +95,9 @@ class ChatWars(object):
                 }
 
         self.publish_message(body)
+
+    def auth_additional_operation(self, user_id, operation):
+        pass
 
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
@@ -444,4 +443,3 @@ class ChatWars(object):
             logger.warning('Exiting immediately!')
             import os
             os._exit(1)
-
