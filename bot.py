@@ -8,7 +8,7 @@ from telegram.ext import Updater, RegexHandler, CommandHandler, TypeHandler, Cal
     ConversationHandler, Filters
 from telegram.ext.dispatcher import run_async
 
-from helpers import ForwardedFrom, stock_re, recipe_re, recipe_parts_re
+from helpers import ForwardedFrom, stock_re, recipe_re, recipe_parts_re, tavern_hint_re
 
 from pony import orm
 from models import User as dbUser, Recipe as dbRecipe, Item as dbItem
@@ -205,9 +205,8 @@ def process_recipe(bot: Bot, update: Update) -> int:
     msg = update.effective_message  # type: Message
     usr = update.effective_user  # type: User
 
-    match = re.match(recipe_re, msg.text)
-
-    if match:
+    if re.match(recipe_re, msg.text):
+        match = re.match(recipe_re, msg.text)
         matches = re.findall(recipe_parts_re, msg.text)
         if matches:
             with orm.db_session:
@@ -220,9 +219,25 @@ def process_recipe(bot: Bot, update: Update) -> int:
                     msg.reply_text("Thanks for submitting the recipe for <b>{}</b>!".format(r.name), parse_mode='HTML')
                 else:
                     msg.reply_text("That item is not in my database. Cancelling recipe submission.")
-
-            return ConversationHandler.END
-
+        return ConversationHandler.END
+    elif re.search(tavern_hint_re, msg.text):
+        match = re.search(tavern_hint_re, msg.text)
+        with orm.db_session:
+            r = dbItem.select(lambda i: i.name == match.group('name')).first()
+            if r:
+                i = dbItem.select(lambda i: i.name == match.group('item')).first()
+                if i:
+                    if dbRecipe.get(result_item=r.id, ingredient_item=i.id):
+                        msg.reply_text("I already know about this part of the recipe. Cancelling recipe submission.")
+                        return ConversationHandler.END
+                    dbRecipe(result_item=r.id, ingredient_item=i.id, quantity_req=match.group('qty'))
+                    msg.reply_text("Thanks for submitting a part for the recipe of <b>{}</b>!".format(r.name),
+                                   parse_mode='HTML')
+                else:
+                    msg.reply_text("{} is not in my database. Cancelling recipe submission.".format(match.group('item')))
+            else:
+                msg.reply_text("{} is not in my database. Cancelling recipe submission.".format(match.group('name')))
+        return ConversationHandler.END
     msg.reply_text("That is not a valid recipe or I fucked up my regex. Please forward it again or /cancel to cancel.")
     return 0
 
