@@ -10,7 +10,7 @@ from telegram.ext import Updater, Filters, RegexHandler, CommandHandler, TypeHan
     MessageHandler, ConversationHandler, InlineQueryHandler
 from telegram.ext.dispatcher import run_async
 
-from consts import item_filter_kb, stock_re, recipe_re, recipe_parts_re
+from consts import item_filter_kb, stock_re, recipe_re, recipe_parts_re, tavern_hint_re
 from helpers import ForwardedFrom, build_craft_kb, gen_craft_tree
 
 from pony import orm
