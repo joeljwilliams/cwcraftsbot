@@ -7,6 +7,8 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 stock_re = re.compile(r"^/a_(?P<id>\w+)\s(?P<name>[\w\s]+)\sx\s(?P<qty>\d+)$", re.MULTILINE)
 recipe_re = re.compile(r"^📃(?P<name>[\w ]+) \(recipe\):$", re.MULTILINE)
 recipe_parts_re = re.compile(r"^(?P<name>[\w\. ]+) x (?P<qty>\d+)$", re.MULTILINE)
+tavern_hint_re = re.compile(r"recipe of (?P<name>[\w ]+) saying that you need (?P<qty>\d+) (?P<item>[\w ]+)\.")
+
 
 item_filter_kb = [[InlineKeyboardButton('All', callback_data='list|all')],
                    [InlineKeyboardButton('Basic', callback_data='list|basic'),
