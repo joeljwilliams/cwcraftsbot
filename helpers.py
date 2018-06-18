@@ -1,18 +1,11 @@
 #!/usr/bin/env python3
 
-import re
-
 from collections import deque, defaultdict
 
 from telegram.ext import BaseFilter
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from models import Item, Recipe
-
-stock_re = re.compile(r"^/a_(?P<id>\w+)\s(?P<name>[\w\s]+)\sx\s(?P<qty>\d+)$", re.MULTILINE)
-recipe_re = re.compile(r"^📃(?P<name>[\w ]+) \(recipe\):$", re.MULTILINE)
-recipe_parts_re = re.compile(r"^(?P<name>[\w\. ]+) x (?P<qty>\d+)$", re.MULTILINE)
-tavern_hint_re = re.compile(r"recipe of (?P<name>[\w ]+) saying that you need (?P<qty>\d+) (?P<item>[\w ]+)\.")
 
 
 class ForwardedFrom(BaseFilter):
