@@ -49,11 +49,28 @@ def help(bot: Bot, update: Update) -> None:
                    "To get started, please forward your /more from @chtwrsbot to me.\nYou may also view all available "
                    "craftable items with the /craft command.\nTo view the crafting recipe for a specific item you may "
                    "use the /craft_code command, where <code>code</code> is the item code of the item to craft.\n\n"
-                   "To add a recipe to the database, you may use the /submit command.",
+                   "To add a recipe to the database, you may use the /submit command.\n\n"
+                   "PM @jjw91 if you want to be added to /credits.",
                    parse_mode='HTML',
                    disable_web_page_preview=True)
 
     logger.debug("Exiting: help")
+    return
+
+
+def credits(bot: Bot, update: Update) -> None:
+    logger.debug("Entering: credits")
+    
+    chat = update.effective_chat  # type: Chat
+    msg = update.effective_message  # type: Message
+    usr = update.effective_user  # type: User
+
+    msg.reply_text("<i>Thanks to the following for helping add recipe info:</i>\n"
+                  "@JayBingHo, @tautologicall, @cwrecipe, @moonriot, @chwikiTaskforce and 🦈LIFE",
+                  parse_mode='HTML',
+                  disable_web_page_preview=True)
+
+    logger.debug("Exiting: credits")
     return
 
 
@@ -380,6 +397,7 @@ if __name__ == '__main__':
 
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('help', help))
+    dp.add_handler(CommandHandler('credits', credits))
     dp.add_handler(CommandHandler(['craft', 'items'], craft))
 
     dp.add_handler(ConversationHandler(entry_points=[CommandHandler('submit', submit_recipe)],
