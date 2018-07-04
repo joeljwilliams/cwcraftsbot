@@ -189,7 +189,6 @@ def craft_cb(bot: Bot, update: Update, groups: tuple) -> None:
     if item.complex:
         recipe_text = '<b>{name}</b>\n\n'.format(name=item.name)
         recipe_text += gen_craft_tree(item)
-        kb_markup = build_craft_kb(item)
     else:
         recipe_text = "<b>{}</b> cannot be crafted.".format(item.name)
 
