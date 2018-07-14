@@ -289,9 +289,15 @@ def process_recipe(bot: Bot, update: Update) -> int:
                     logger.debug("process_recipe: item %s found in db, continuing processing", r.name)
                     for part in matches:
                         name, qty = part
-                        i = dbItem.select(lambda i: i.name == name).first()
-                        logger.debug("process_recipe: adding %s x %s to item recipe", qty, name)
-                        dbRecipe(result_item=r.id, ingredient_item=i.id, quantity_req=qty)
+                        i = dbItem.select(lambda i: i.name.lower() == name.lower()).first()
+                        if i:
+                            logger.debug("process_recipe: adding %s x %s to item recipe", qty, name)
+                            dbRecipe(result_item=r.id, ingredient_item=i.id, quantity_req=qty)
+                        else:
+                            logger.debug("could not find item in database with name %s, cancelling", name)
+                            dbItem.rollback()
+                            msg.reply_text(f"Unable to find <b>{name}</b> in my database, cancelling submission", parse_mode='HTML')
+                            return ConversationHandler.END
                     msg.reply_text("Thanks for submitting the recipe for <b>{}</b>!".format(r.name), parse_mode='HTML')
                 else:
                     logger.debug("process_recipe: item not found")
