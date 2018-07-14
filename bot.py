@@ -144,19 +144,19 @@ def craft_list(bot: Bot, update: Update, groups: tuple) -> None:
     item_filter = groups[0]
 
     if item_filter == 'all':
-        items = dbItem.select(lambda i: i)
+        items = dbItem.select(lambda i: i).order_by(lambda i: i.id)
     elif item_filter == 'basic':
-        items = dbItem.select(lambda i: not i.complex)
+        items = dbItem.select(lambda i: not i.complex).order_by(lambda i: i.id)
     elif item_filter == 'complex':
-        items = dbItem.select(lambda i: i.complex)
+        items = dbItem.select(lambda i: i.complex).order_by(lambda i: i.id)
     elif item_filter == 'armour':
-        items = dbItem.select(lambda i: i.id.startswith('a'))
+        items = dbItem.select(lambda i: i.id.startswith('a')).order_by(lambda i: i.id)
     elif item_filter == 'weapon':
-        items = dbItem.select(lambda i: i.id.startswith('w'))
+        items = dbItem.select(lambda i: i.id.startswith('w')).order_by(lambda i: i.id)
     elif item_filter == 'recipe':
-        items = dbItem.select(lambda i: i.id.startswith('r'))
+        items = dbItem.select(lambda i: i.id.startswith('r')).order_by(lambda i: i.id)
     elif item_filter == 'fragment':
-        items = dbItem.select(lambda i: i.id.startswith('k'))
+        items = dbItem.select(lambda i: i.id.startswith('k')).order_by(lambda i: i.id)
     else:
         items = list()
 
@@ -211,7 +211,7 @@ def craft_cb(bot: Bot, update: Update, groups: tuple) -> None:
 
     if item.ingredient_in:
         recipe_text += '\n\n<b>Used in:</b>'
-        for t in item.ingredient_in:
+        for t in item.ingredient_in.order_by(lambda i: i.id):
             recipe_text += '<code>\n\t{}</code>'.format(t.result_item.name)
             if t.result_item.complex:
                 recipe_text += ' (/craft_{})'.format(t.result_item.id)
@@ -344,7 +344,7 @@ def item_search(bot: Bot, update: Update, args: list=None) -> None:
     result_text = str()
 
     with orm.db_session:
-        items = dbItem.select(lambda i: i)
+        items = dbItem.select(lambda i: i).order_by(lambda i: i.id)
         for keyword in keywords:
             items = items.filter(lambda i: keyword.lower() in i.name.lower())
 

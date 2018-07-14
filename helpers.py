@@ -23,13 +23,13 @@ def gen_craft_tree(item: Item) -> str:
     output_list = str()
     shopping_list = defaultdict(int)
     mystack = deque()
-    for i in item.result_of:
+    for i in item.result_of.order_by(lambda i: i.id):
         mystack.appendleft((i, 0, i.quantity_req))
     while mystack:
         t, l, qty = mystack.popleft()
         t = t.ingredient_item
         if t.complex:
-            for i in t.result_of:
+            for i in t.result_of.order_by(lambda i: i.id):
                 mystack.appendleft((i, l+1, qty*i.quantity_req))
         else:
             shopping_list[t.name] += qty
