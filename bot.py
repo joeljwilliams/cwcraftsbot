@@ -211,7 +211,7 @@ def craft_cb(bot: Bot, update: Update, groups: tuple) -> None:
 
     if item.ingredient_in:
         recipe_text += '\n\n<b>Used in:</b>'
-        for t in item.ingredient_in.order_by(lambda i: i.id):
+        for t in item.ingredient_in.order_by(lambda t: t.id):
             recipe_text += '<code>\n\t{}</code>'.format(t.result_item.name)
             if t.result_item.complex:
                 recipe_text += ' (/craft_{})'.format(t.result_item.id)
