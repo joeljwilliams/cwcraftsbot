@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import re
 from uuid import uuid4
+from datetime import datetime
 
 import config
 
@@ -55,6 +56,21 @@ def help(bot: Bot, update: Update) -> None:
                    disable_web_page_preview=True)
 
     logger.debug("Exiting: help")
+    return
+
+
+def ping(bot: Bot, update: Update) -> None:
+    logger.debug("Entering: ping")
+
+    chat = update.effective_chat  # type: Chat
+    msg = update.effective_message  # type: Message
+    usr = update.effective_user  # type: User
+
+    diff = msg.date - datetime.utcnow()
+
+    msg.reply_text('Response time: {}ms'.format((diff.microseconds / 1000)))
+
+    logger.debug("Exiting: ping")
     return
 
 
@@ -403,6 +419,7 @@ if __name__ == '__main__':
 
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('help', help))
+    dp.add_handler(CommandHandler('ping', ping))
     dp.add_handler(CommandHandler('credits', credits))
     dp.add_handler(CommandHandler(['craft', 'items'], craft))
 
