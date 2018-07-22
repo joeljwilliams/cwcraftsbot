@@ -11,7 +11,7 @@ DB_HOST = os.getenv('DATABASE_SERVICE_NAME')
 DB_NAME = os.getenv('DATABASE_NAME')
 
 if APP_ENV == 'PROD_OPENSHIFT':
-    LOGLEVEL = 'INFO'
+    LOGLEVEL = os.getenv('LOGLEVEL', 'INFO')
     os_namespace = os.getenv("OPENSHIFT_BUILD_NAMESPACE")
     os_app_name, build = os.getenv("OPENSHIFT_BUILD_NAME").rsplit('-', 1)
     DB_PARAMS = {'provider': 'postgres',
@@ -28,7 +28,7 @@ if APP_ENV == 'PROD_OPENSHIFT':
     WEBHOOK_URL = r.json()["spec"]["host"]
     WEBHOOK_PORT = int(os.getenv("{}_SERVICE_PORT_WEB".format(os_app_name.upper().replace('-', '_'))))
 elif APP_ENV == 'PROD_HEROKU':
-    LOGLEVEL = 'INFO'
+    LOGLEVEL = os.getenv('LOGLEVEL', 'INFO')
     DB_PARAMS = {'provider': 'postgres',
                  'dsn': os.getenv('DATABASE_URL')}
 

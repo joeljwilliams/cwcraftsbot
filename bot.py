@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import re
 from uuid import uuid4
+from datetime import datetime
 
 import config
 
@@ -49,11 +50,43 @@ def help(bot: Bot, update: Update) -> None:
                    "To get started, please forward your /more from @chtwrsbot to me.\nYou may also view all available "
                    "craftable items with the /craft command.\nTo view the crafting recipe for a specific item you may "
                    "use the /craft_code command, where <code>code</code> is the item code of the item to craft.\n\n"
-                   "To add a recipe to the database, you may use the /submit command.",
+                   "To add a recipe to the database, you may use the /submit command.\n\n"
+                   "PM @jjw91 if you want to be added to /credits.",
                    parse_mode='HTML',
                    disable_web_page_preview=True)
 
     logger.debug("Exiting: help")
+    return
+
+
+def ping(bot: Bot, update: Update) -> None:
+    logger.debug("Entering: ping")
+
+    chat = update.effective_chat  # type: Chat
+    msg = update.effective_message  # type: Message
+    usr = update.effective_user  # type: User
+
+    diff = msg.date - datetime.utcnow()
+
+    msg.reply_text('Response time: {}ms'.format((diff.microseconds / 1000)))
+
+    logger.debug("Exiting: ping")
+    return
+
+
+def credits(bot: Bot, update: Update) -> None:
+    logger.debug("Entering: credits")
+    
+    chat = update.effective_chat  # type: Chat
+    msg = update.effective_message  # type: Message
+    usr = update.effective_user  # type: User
+
+    msg.reply_text("<i>Thanks to the following for helping add recipe info:</i>\n"
+                  "@JayBingHo, @tautologicall, @cwrecipe, @moonriot, @chwikiTaskforce and 🦈LIFE",
+                  parse_mode='HTML',
+                  disable_web_page_preview=True)
+
+    logger.debug("Exiting: credits")
     return
 
 
@@ -127,19 +160,19 @@ def craft_list(bot: Bot, update: Update, groups: tuple) -> None:
     item_filter = groups[0]
 
     if item_filter == 'all':
-        items = dbItem.select(lambda i: i)
+        items = dbItem.select(lambda i: i).order_by(lambda i: i.id)
     elif item_filter == 'basic':
-        items = dbItem.select(lambda i: not i.complex)
+        items = dbItem.select(lambda i: not i.complex).order_by(lambda i: i.id)
     elif item_filter == 'complex':
-        items = dbItem.select(lambda i: i.complex)
+        items = dbItem.select(lambda i: i.complex).order_by(lambda i: i.id)
     elif item_filter == 'armour':
-        items = dbItem.select(lambda i: i.id.startswith('a'))
+        items = dbItem.select(lambda i: i.id.startswith('a')).order_by(lambda i: i.id)
     elif item_filter == 'weapon':
-        items = dbItem.select(lambda i: i.id.startswith('w'))
+        items = dbItem.select(lambda i: i.id.startswith('w')).order_by(lambda i: i.id)
     elif item_filter == 'recipe':
-        items = dbItem.select(lambda i: i.id.startswith('r'))
+        items = dbItem.select(lambda i: i.id.startswith('r')).order_by(lambda i: i.id)
     elif item_filter == 'fragment':
-        items = dbItem.select(lambda i: i.id.startswith('k'))
+        items = dbItem.select(lambda i: i.id.startswith('k')).order_by(lambda i: i.id)
     else:
         items = list()
 
@@ -189,13 +222,12 @@ def craft_cb(bot: Bot, update: Update, groups: tuple) -> None:
     if item.complex:
         recipe_text = '<b>{name}</b>\n\n'.format(name=item.name)
         recipe_text += gen_craft_tree(item)
-        kb_markup = build_craft_kb(item)
     else:
         recipe_text = "<b>{}</b> cannot be crafted.".format(item.name)
 
     if item.ingredient_in:
         recipe_text += '\n\n<b>Used in:</b>'
-        for t in item.ingredient_in:
+        for t in item.ingredient_in.order_by(lambda t: t.id):
             recipe_text += '<code>\n\t{}</code>'.format(t.result_item.name)
             if t.result_item.complex:
                 recipe_text += ' (/craft_{})'.format(t.result_item.id)
@@ -273,9 +305,15 @@ def process_recipe(bot: Bot, update: Update) -> int:
                     logger.debug("process_recipe: item %s found in db, continuing processing", r.name)
                     for part in matches:
                         name, qty = part
-                        i = dbItem.select(lambda i: i.name == name).first()
-                        logger.debug("process_recipe: adding %s x %s to item recipe", qty, name)
-                        dbRecipe(result_item=r.id, ingredient_item=i.id, quantity_req=qty)
+                        i = dbItem.select(lambda i: i.name.lower() == name.lower()).first()
+                        if i:
+                            logger.debug("process_recipe: adding %s x %s to item recipe", qty, name)
+                            dbRecipe(result_item=r.id, ingredient_item=i.id, quantity_req=qty)
+                        else:
+                            logger.debug("could not find item in database with name %s, cancelling", name)
+                            dbItem.rollback()
+                            msg.reply_text(f"Unable to find <b>{name}</b> in my database, cancelling submission", parse_mode='HTML')
+                            return ConversationHandler.END
                     msg.reply_text("Thanks for submitting the recipe for <b>{}</b>!".format(r.name), parse_mode='HTML')
                 else:
                     logger.debug("process_recipe: item not found")
@@ -322,7 +360,7 @@ def item_search(bot: Bot, update: Update, args: list=None) -> None:
     result_text = str()
 
     with orm.db_session:
-        items = dbItem.select(lambda i: i)
+        items = dbItem.select(lambda i: i).order_by(lambda i: i.id)
         for keyword in keywords:
             items = items.filter(lambda i: keyword.lower() in i.name.lower())
 
@@ -381,6 +419,8 @@ if __name__ == '__main__':
 
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('help', help))
+    dp.add_handler(CommandHandler('ping', ping))
+    dp.add_handler(CommandHandler('credits', credits))
     dp.add_handler(CommandHandler(['craft', 'items'], craft))
 
     dp.add_handler(ConversationHandler(entry_points=[CommandHandler('submit', submit_recipe)],
