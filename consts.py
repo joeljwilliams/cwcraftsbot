@@ -16,5 +16,7 @@ item_filter_kb = [[InlineKeyboardButton('All', callback_data='list|all')],
                    [InlineKeyboardButton('Fragments', callback_data='list|fragment'),
                     InlineKeyboardButton('Armors', callback_data='list|armour')],
                    [InlineKeyboardButton('Recipes', callback_data='list|recipe'),
-                    InlineKeyboardButton('Weapons', callback_data='list|weapon')]]
+                    InlineKeyboardButton('Weapons', callback_data='list|weapon')],
+                   [InlineKeyboardButton('Herbs', callback_data='list|herb'),
+                    InlineKeyboardButton('Potions', callback_data='list|potion')]]
 

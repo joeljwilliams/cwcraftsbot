@@ -158,6 +158,7 @@ def craft_list(bot: Bot, update: Update, groups: tuple) -> None:
     kb_markup = InlineKeyboardMarkup(item_filter_kb)
 
     item_filter = groups[0]
+    craft_cmd = 'craft'
 
     if item_filter == 'all':
         items = dbItem.select(lambda i: i).order_by(lambda i: i.id)
@@ -173,6 +174,13 @@ def craft_list(bot: Bot, update: Update, groups: tuple) -> None:
         items = dbItem.select(lambda i: i.id.startswith('r')).order_by(lambda i: i.id)
     elif item_filter == 'fragment':
         items = dbItem.select(lambda i: i.id.startswith('k')).order_by(lambda i: i.id)
+    elif item_filter == 'potion':
+        items = dbItem.select(lambda i: i.id.startswith('p')).order_by(lambda i: i.id)
+        craft_cmd = 'brew'
+    elif item_filter == 'herb':
+        # SQL> select * from item WHERE id ~ E'^\\d+$' and id::integer between 39 and 69;
+        items = dbItem.select(lambda i:  orm.raw_sql(r"i.id ~ E'^\\d+$$'") and orm.between(orm.raw_sql("i.id::integer"), 39, 69)).order_by(lambda i: i.id)
+        craft_cmd = 'brew'
     else:
         items = list()
 
@@ -180,7 +188,7 @@ def craft_list(bot: Bot, update: Update, groups: tuple) -> None:
 
     for item in items:
         items_list += '<code>{:>3}</code> - {}'.format(item.id, item.name)
-        items_list += ' (/craft_{})\n'.format(item.id) if item.complex else '\n'
+        items_list += ' (/{}_{})\n'.format(craft_cmd, item.id) if item.complex else '\n'
 
     msg.edit_text(items_list, reply_markup=kb_markup, parse_mode='HTML')
 
@@ -227,10 +235,15 @@ def craft_cb(bot: Bot, update: Update, groups: tuple) -> None:
 
     if item.ingredient_in:
         recipe_text += '\n\n<b>Used in:</b>'
-        for t in item.ingredient_in.order_by(lambda t: t.id):
+        for t in item.ingredient_in.order_by(lambda t: t.result_item.id):
             recipe_text += '<code>\n\t{}</code>'.format(t.result_item.name)
             if t.result_item.complex:
-                recipe_text += ' (/craft_{})'.format(t.result_item.id)
+                command = 'craft'
+                if t.result_item.id.isdigit() and 39 <= int(t.result_item.id) <= 69:
+                    command = 'brew'
+                elif t.result_item.id.startswith('p'):
+                    command = 'brew'
+                recipe_text += ' (/{}_{})'.format(command, t.result_item.id)
 
     msg.reply_text(recipe_text, reply_markup=kb_markup, parse_mode='HTML')
 
@@ -435,7 +448,7 @@ if __name__ == '__main__':
     dp.add_handler(CommandHandler(['search', 's', 'find'], item_search, pass_args=True))
     dp.add_handler(MessageHandler(Filters.text, item_search))
     dp.add_handler(CallbackQueryHandler(craft_list, pattern=r'^list\|(.*)', pass_groups=True))
-    dp.add_handler(RegexHandler(r'^/(?:craft|i)_(.*)$', craft_cb, pass_groups=True))
+    dp.add_handler(RegexHandler(r'^/(?:craft|i|brew)_(.*)$', craft_cb, pass_groups=True))
 
     dp.add_handler(InlineQueryHandler(craft_inline, pattern=r'(\w{2,3})-(\d{1,3})', pass_groups=True))
 
