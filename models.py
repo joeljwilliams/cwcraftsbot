@@ -32,11 +32,10 @@ class Recipe(db.Entity):
     orm.composite_key(result_item, ingredient_item)
 
 
-if config.APP_ENV.startswith('PROD'):
-    db.bind(**config.DB_PARAMS)
-else:
+if not config.APP_ENV.startswith('PROD'):
     orm.set_sql_debug(True)
-    db.bind('sqlite', 'crafts.sqlite', create_db=True)
+
+db.bind(**config.DB_PARAMS)
 db.generate_mapping(create_tables=True)
 
 
