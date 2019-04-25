@@ -10,12 +10,17 @@ from models import Item, Recipe
 
 class ForwardedFrom(BaseFilter):
     def __init__(self, user_id):
-        self.user_id = user_id
+        if isinstance(user_id, int):
+            self.valid_ids = [user_id]
+        elif isinstance(user_id, list):
+            self.valid_ids = user_id
+        else:
+            raise ValueError("Accepts int or list as argument")
 
     def filter(self, message):
         if message.forward_from:
             fwd_usr = message.forward_from
-            return fwd_usr.id == self.user_id
+            return fwd_usr.id in self.valid_ids
         return False
 
 

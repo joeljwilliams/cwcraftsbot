@@ -438,7 +438,7 @@ if __name__ == '__main__':
 
     dp.add_handler(ConversationHandler(entry_points=[CommandHandler('submit', submit_recipe)],
                                        states={
-                                           0: [MessageHandler(ForwardedFrom(user_id=408101137), process_recipe)]
+                                           0: [MessageHandler(ForwardedFrom([408101137, 265204902]), process_recipe)]
                                        },
                                        fallbacks=[CommandHandler('cancel', cancel_recipe)]
                                        )
