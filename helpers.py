@@ -10,12 +10,17 @@ from models import Item, Recipe
 
 class ForwardedFrom(BaseFilter):
     def __init__(self, user_id):
-        self.user_id = user_id
+        if isinstance(user_id, int):
+            self.valid_ids = [user_id]
+        elif isinstance(user_id, list):
+            self.valid_ids = user_id
+        else:
+            raise ValueError("Accepts int or list as argument")
 
     def filter(self, message):
         if message.forward_from:
             fwd_usr = message.forward_from
-            return fwd_usr.id == self.user_id
+            return fwd_usr.id in self.valid_ids
         return False
 
 
@@ -23,13 +28,13 @@ def gen_craft_tree(item: Item) -> str:
     output_list = str()
     shopping_list = defaultdict(int)
     mystack = deque()
-    for i in item.result_of:
+    for i in item.result_of.order_by(lambda i: i.ingredient_item.id):
         mystack.appendleft((i, 0, i.quantity_req))
     while mystack:
         t, l, qty = mystack.popleft()
         t = t.ingredient_item
         if t.complex:
-            for i in t.result_of:
+            for i in t.result_of.order_by(lambda i: i.id):
                 mystack.appendleft((i, l+1, qty*i.quantity_req))
         else:
             shopping_list[t.name] += qty
