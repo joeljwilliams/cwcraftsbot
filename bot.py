@@ -163,7 +163,8 @@ def craft_list(bot: Bot, update: Update, groups: tuple) -> None:
     if item_filter == 'all':
         items = dbItem.select(lambda i: i).order_by(lambda i: i.id)
     elif item_filter == 'basic':
-        items = dbItem.select(lambda i: not i.complex).order_by(lambda i: i.id)
+        #items = dbItem.select(lambda i: not i.complex).order_by(lambda i: i.id)
+        items = dbItem.select(lambda i:  orm.raw_sql(r"i.id ~ E'^\\d+$$'") and orm.between(orm.raw_sql("i.id::integer"), 1, 69) and not i.complex).order_by(lambda i: i.id)
     elif item_filter == 'complex':
         items = dbItem.select(lambda i: i.complex).order_by(lambda i: i.id)
     elif item_filter == 'armour':
