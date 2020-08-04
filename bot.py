@@ -163,7 +163,8 @@ def craft_list(bot: Bot, update: Update, groups: tuple) -> None:
     if item_filter == 'all':
         items = dbItem.select(lambda i: i).order_by(lambda i: i.id)
     elif item_filter == 'basic':
-        items = dbItem.select(lambda i: not i.complex).order_by(lambda i: i.id)
+        #items = dbItem.select(lambda i: not i.complex).order_by(lambda i: i.id)
+        items = dbItem.select(lambda i:  orm.raw_sql(r"i.id ~ E'^\\d+$$'") and orm.between(orm.raw_sql("i.id::integer"), 1, 69) and not i.complex).order_by(lambda i: i.id)
     elif item_filter == 'complex':
         items = dbItem.select(lambda i: i.complex).order_by(lambda i: i.id)
     elif item_filter == 'armour':
@@ -228,7 +229,7 @@ def craft_cb(bot: Bot, update: Update, groups: tuple) -> None:
     kb_markup = None
 
     if item.complex:
-        recipe_text = '<b>{name}</b>\n\n'.format(name=item.name)
+        recipe_text = '<b>{id} - {name}</b>\n\n'.format(id=item.id, name=item.name)
         recipe_text += gen_craft_tree(item)
     else:
         recipe_text = "<b>{}</b> cannot be crafted.".format(item.name)
@@ -382,7 +383,12 @@ def item_search(bot: Bot, update: Update, args: list=None) -> None:
 
             for item in items:
                 result_text += '<code>{:>3}</code> - {}'.format(item.id, item.name)
-                result_text += ' (/craft_{})\n'.format(item.id) if item.complex else ' (/i_{})\n'.format(item.id)
+                command = 'craft'
+                if item.id.isdigit() and 39 <= int(item.id) <= 69:
+                    command = 'brew'
+                elif item.id.startswith('p'):
+                    command = 'brew'
+                result_text += ' (/{}_{})\n'.format(command, item.id) if item.complex else ' (/i_{})\n'.format(item.id)
         elif len(items) == 1:
             for item in items:
                 return craft_cb(bot, update, (item.id, ))

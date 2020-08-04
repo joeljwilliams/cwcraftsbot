@@ -33,7 +33,7 @@ elif APP_ENV == 'PROD_HEROKU':
                  'dsn': os.getenv('DATABASE_URL')}
 
     WEBHOOK_PORT = int(os.getenv('PORT'))
-    WEBHOOK_URL = 'cw-crafts-bot.herokuapp.com'
+    WEBHOOK_URL = '{}.herokuapp.com'.format(os.getenv('HEROKU_APP_NAME'))
 else:
     LOGLEVEL = 'DEBUG'
     DB_PARAMS = {'provider': 'postgres',
